@@ -2,7 +2,7 @@ import numpy as np
 import gurobipy
 import datetime
 
-def MIPBranchCutGurobi(runs, power_matrix, pathloss_matrix, number_of_edges, number_of_devices, L, number_of_subcarriers, power_max, number_of_PRBs, Xi, Noise):
+def MIPBranchCutGurobi(runs, power_matrix, pathloss_matrix, number_of_edges, number_of_devices, power_max, number_of_PRBs, Xi, Noise):
     datetime_runs = 0
     connected_devices = 0
     for t in range(runs):

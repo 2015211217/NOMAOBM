@@ -42,8 +42,8 @@ for contending_devices in range(1, 10):
     Xi = np.power(2, target_datarate_per_device / (number_of_subcarriers_perPRB * subcarrier_bandwidth)) - 1
     # creating the fading coefficients
     number_of_different_total_slots = number_of_device_required * number_of_subcarriers_perPRB * number_of_PRB
-    p_matrix = np.zeros((runs, number_of_different_total_slots), dtype=complex)
-    g_matrix = np.zeros((runs, number_of_different_total_slots), dtype=complex)
+    p_matrix = np.zeros((runs, number_of_different_total_slots))
+    g_matrix = np.zeros((runs, number_of_different_total_slots))
 
     for t in range(runs):
         #generate data
@@ -53,23 +53,28 @@ for contending_devices in range(1, 10):
         b_list_complex = np.random.randn(number_of_different_total_slots)
 
         b_list = np.zeros(number_of_different_total_slots, dtype=complex)
-        b_list_X = np.zeros(number_of_different_total_slots, dtype=complex)
-        p_list = np.zeros(number_of_different_total_slots, dtype=complex)
-        b_list_X = np.abs(np.sort_complex(-1 * b_list_X))
+        b_list_X = np.zeros(number_of_different_total_slots)
+
+        p_list = np.zeros(number_of_different_total_slots)
+
+        # b_list_X = np.abs(np.sort_complex(-1 * b_list_X))
 
         for i in range(number_of_different_total_slots):
             b_list[i] = b_list_complex[i] + b_list_complex[i] * cmath.sqrt(-1)
 
         for i in range(number_of_different_total_slots):
-            b_list_X[i] = np.emath.power(np.abs(b_list.flatten()[i] * np.emath.power(path_loss_dB, -0.5)), 2)
+            b_list[i] = b_list[i] * np.emath.power(path_loss_dB, -0.5)
+            b_list_X[i] = np.power(b_list[i].real, 2)+np.power(b_list[i].imag, 2)
 
         #for future usage, still add the multiply of L into the date generation
         for i in range(number_of_different_total_slots):
             for j in range(L):
-                g_matrix[t][i*L+j] = b_list[i]
+                g_matrix[t][i*L+j] = b_list_X[i]
+            g_matrix[t] = np.abs(np.sort(-1 * g_matrix[t]))
+
         p_mediate = 0
         for i in range(number_of_device_required):
-            p_list[i] = Xi * (p_mediate + N_noise / b_list[i])
+            p_list[i] = Xi * (p_mediate + N_noise / b_list_X[i])
             p_mediate += p_list[i]
         for i in range(number_of_different_total_slots):
             for j in range(L):

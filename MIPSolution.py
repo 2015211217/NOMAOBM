@@ -6,9 +6,10 @@ def MIPBranchCutGurobi(runs, power_matrix, pathloss_matrix, number_of_edges, num
     datetime_runs = 0
     connected_devices = 0
     for t in range(runs):
+        start_time = datetime.datetime.now().timestamp()
         power_list = power_matrix[t]
         pathloss_list = pathloss_matrix[t]
-        start_time = datetime.datetime.now()
+
         #gurobi solution
         MODEL = gurobipy.Model()
         X = MODEL.addVars(number_of_edges, vtype=gurobipy.GRB.BINARY)
@@ -17,7 +18,6 @@ def MIPBranchCutGurobi(runs, power_matrix, pathloss_matrix, number_of_edges, num
         for i in range(number_of_edges):
             obj += X[i]
         MODEL.setObjective(obj, gurobipy.GRB.MAXIMIZE)
-        MODEL.update()
 
         for i in range(number_of_devices):#one device can only connect to one slot
             MODEL.addConstr(sum(X[int(i * (number_of_edges/number_of_devices) + j)] for j in range(int(number_of_edges/number_of_devices))) <= 1)
@@ -33,10 +33,11 @@ def MIPBranchCutGurobi(runs, power_matrix, pathloss_matrix, number_of_edges, num
         for i in range(number_of_edges):
             MODEL.addConstr(X[i] * pathloss_list[i] * (power_list[i] - Xi * sum(power_list[j] * X[j] for j in range(0, int(i - number_of_edges / number_of_devices))))
                             >= Xi * Noise * X[i])
-
         MODEL.update()
+        MODEL.optimize()
         GetX = MODEL.getAttr('X', X)
         for i in range(number_of_edges):
-            connected_devices += GetX[i]
-        datetime_runs += datetime.datetime.now() - start_time
+            connected_devices += int(GetX[i])
+        datetime_runs += datetime.datetime.now().timestamp() - start_time
+
     return connected_devices / runs, datetime_runs / runs

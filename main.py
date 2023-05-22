@@ -11,10 +11,10 @@ bandwidth_per_PRB = 180*1e3 #kHz
 subcarrier_bandwidth = 15*1e3 #kHz Bs
 carrier_frequency = 900*1e3 #Mhz
 transmission_power_per_PRB = np.power(10, 23/10)
-number_of_PRB = 3 #S
+number_of_PRB = 2 #S
 target_datarate_per_device = 20*1e3 #kbps
 L = 1
-number_of_subcarriers_perPRB = int(number_of_PRB * bandwidth_per_PRB / subcarrier_bandwidth) #L * number of subcarriers per PRB
+number_of_subcarriers_perPRB = 12 #L * number of subcarriers per PRB
 number_of_slots_per_PRB = number_of_subcarriers_perPRB * L
 number_of_slots_total = number_of_slots_per_PRB * number_of_PRB
 
@@ -30,7 +30,7 @@ connected_device_sequence_MIP = np.zeros(10)
 datetime_sequence_SDA = np.zeros(10)
 datetime_sequence_MIP = np.zeros(10)
 
-devices_block = 10
+devices_block = 4
 for contending_devices in range(1, 10):
     number_of_device_required = contending_devices * devices_block
     path_loss_dB = 120.9 + 37.6 * np.log(number_of_device_required / 1000) + UE_gain_dB + indoor_loss_dB
@@ -51,14 +51,10 @@ for contending_devices in range(1, 10):
         b_list_real = np.random.randn(number_of_different_total_slots)
         np.random.seed(1)
         b_list_complex = np.random.randn(number_of_different_total_slots)
-
         b_list = np.zeros(number_of_different_total_slots, dtype=complex)
         b_list_X = np.zeros(number_of_different_total_slots)
-
         p_list = np.zeros(number_of_different_total_slots)
-
         # b_list_X = np.abs(np.sort_complex(-1 * b_list_X))
-
         for i in range(number_of_different_total_slots):
             b_list[i] = b_list_complex[i] + b_list_complex[i] * cmath.sqrt(-1)
 
@@ -82,10 +78,11 @@ for contending_devices in range(1, 10):
 
     print("generation done")
     number_of_edges = number_of_device_required * number_of_slots_total
-    connected_device_sequence_MIP[contending_devices], datetime_sequence_MIP[contending_devices] = MIPBranchCutGurobi(runs, p_matrix,g_matrix, number_of_edges, number_of_device_required, bandwidth_per_PRB, number_of_PRB, Xi, N_noise)
-    print("MIP done")
     connected_device_sequence_SDA[contending_devices], datetime_sequence_SDA[contending_devices] = Baseline_SDA(runs, number_of_PRB, transmission_power_per_PRB, p_matrix, number_of_slots_per_PRB, number_of_device_required)
     print("SDA done")
+    connected_device_sequence_MIP[contending_devices], datetime_sequence_MIP[contending_devices] = MIPBranchCutGurobi(100, p_matrix,g_matrix, number_of_edges, number_of_device_required, bandwidth_per_PRB, number_of_PRB, Xi, N_noise)
+    print("MIP done")
+
 
 
 ##plot the result

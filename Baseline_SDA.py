@@ -1,12 +1,13 @@
 import numpy as np
 import datetime
 import sys
-def Baseline_SDA(runs, number_of_PRB, max_perPRB, power_matrix, number_of_slots_per_PRB, number_of_device):
+def Baseline_SDA(runs, L, number_of_PRB, max_perPRB, power_matrix, number_of_slots_per_PRB, number_of_device):
     datetime_runs = 0
     connected_devices = 0
     #The version of code for the journal paper only works for each subcarrier only have one slot
     for t in range(runs):
         start_time = datetime.datetime.now().timestamp()
+        # p_list = np.zeros(1, number_of_PRB * number_of_device * number_of_slots_per_PRB)
         p_list = power_matrix[t]
         PRB_power_sequence = np.zeros(number_of_PRB)
 
@@ -14,7 +15,9 @@ def Baseline_SDA(runs, number_of_PRB, max_perPRB, power_matrix, number_of_slots_
             PRB_i = (i % (number_of_slots_per_PRB * number_of_PRB)) // number_of_slots_per_PRB
             if ((PRB_power_sequence[PRB_i] + p_list[i]) < max_perPRB):
                 PRB_power_sequence[PRB_i] += p_list[i]
-                for j in range((i // (number_of_slots_per_PRB * number_of_PRB)) * (number_of_slots_per_PRB * number_of_PRB),(i // (number_of_slots_per_PRB * number_of_PRB)+1) * (number_of_slots_per_PRB * number_of_PRB)):
+                connected_devices += 1
+                for j in range((i // (number_of_slots_per_PRB * number_of_PRB)) * (number_of_slots_per_PRB * number_of_PRB),
+                               (i // (number_of_slots_per_PRB * number_of_PRB)+1) * (number_of_slots_per_PRB * number_of_PRB)):
                     p_list[j] = sys.maxsize
                 index_slot = (i % (number_of_slots_per_PRB * number_of_PRB))
                 for j in range(number_of_device):

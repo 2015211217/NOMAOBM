@@ -30,6 +30,7 @@ def MWFMP(runs, power_matrix, number_of_device, number_of_PRBs, Pmax, number_of_
             for i in range(number_of_device):
                 for j in range(PRB * number_of_slots_perPRB, (PRB + 1) * number_of_slots_perPRB):
                     Power_PRB[PRB] += p_chosen_matrix[i][j]
+
             while(Power_PRB[PRB] > Pmax):
                 #find the minimum in this PRB and exclude it
                 #right now the usage of power is not considered
@@ -38,7 +39,7 @@ def MWFMP(runs, power_matrix, number_of_device, number_of_PRBs, Pmax, number_of_
                 line_min = -1
                 for row in rindex:
                     for line in cindex:
-                        if (p_chosen_matrix[row][line] < p_min):
+                        if (p_chosen_matrix[row][line] < p_min and p_chosen_matrix[row][line] != 0):
                             p_min = p_chosen_matrix[row][line]
                             row_min = row
                             line_min = line
@@ -46,5 +47,6 @@ def MWFMP(runs, power_matrix, number_of_device, number_of_PRBs, Pmax, number_of_
                 p_chosen_matrix[row_min][line_min] = 0
 
         connected_devices += np.count_nonzero(p_chosen_matrix)
+
         datetime_runs += datetime.datetime.now().timestamp() - start_time
     return connected_devices / runs, datetime_runs / runs

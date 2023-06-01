@@ -4,6 +4,13 @@
     <list>
       <list>
         <remote-mappings server-id="python@6569385a-6a94-4acd-a817-53269d1e7052" />
+        <remote-mappings server-id="python@sftp://jiang@133.5.24.18:22/usr/local/share/anaconda3/bin/python3.7">
+          <settings>
+            <list>
+              <mapping local-root="$PROJECT_DIR$" remote-root="/home/jiang/NOMAMIP/home/jiang/NOMAMIP" />
+            </list>
+          </settings>
+        </remote-mappings>
       </list>
     </list>
   </component>

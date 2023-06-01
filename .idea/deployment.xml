@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="jiang@133.5.24.18:22 password (2)" remoteFilesAllowedToDisappearOnAutoupload="false" autoUploadExternalChanges="true">
+  <component name="PublishConfigData" autoUpload="Always" remoteFilesAllowedToDisappearOnAutoupload="false" autoUploadExternalChanges="true">
     <serverData>
-      <paths name="jiang@133.5.24.18:22 password (2)">
+      <paths name="jiang@133.5.24.18:22 password">
         <serverdata>
           <mappings>
-            <mapping deploy="/tmp/pycharm_project_424" local="$PROJECT_DIR$" />
+            <mapping deploy="/home/jiang/NOMAMIP" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

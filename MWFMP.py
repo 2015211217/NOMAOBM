@@ -14,15 +14,16 @@ def MWFMP(runs, power_matrix, number_of_device, number_of_PRBs, Pmax, number_of_
         p_matrix = np.zeros((number_of_device, int(len(p_list) / number_of_device)))
         for i in range(number_of_device):
             for j in range(int(len(p_list) / number_of_device)):
-                p_matrix[i][j] = p_list[i * int(len(p_list) / number_of_device) + j]
-        rindex, cindex = linear_sum_assignment(p_matrix)
+                p_matrix[i][j] = -1 * p_list[i * int(len(p_list) / number_of_device) + j]
+
+        rindex, cindex = linear_sum_assignment(p_matrix) #chose the minimum one...
+
         #rindex -> row cindex -> line
         ####truncation what will happen when the number of device exceed the slot number?
         ##build a chosen matrix, it would be easier
         p_chosen_matrix = np.zeros((number_of_device, int(len(p_list) / number_of_device)))
         for i in range(len(rindex)):
-            for j in range(len(cindex)):
-                p_chosen_matrix[i][j] = p_matrix[i][j]
+            p_chosen_matrix[rindex[i]][cindex[i]] = -1 * p_matrix[rindex[i]][cindex[i]]
 
         Power_PRB = np.zeros(number_of_PRBs)
         for PRB in range(number_of_PRBs):
@@ -45,7 +46,6 @@ def MWFMP(runs, power_matrix, number_of_device, number_of_PRBs, Pmax, number_of_
                             line_min = line
                 Power_PRB[PRB] -= p_chosen_matrix[row_min][line_min]
                 p_chosen_matrix[row_min][line_min] = 0
-
         connected_devices += np.count_nonzero(p_chosen_matrix)
 
         datetime_runs += datetime.datetime.now().timestamp() - start_time

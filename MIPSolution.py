@@ -30,11 +30,15 @@ def MIPBranchCutGurobi(runs, L, power_matrix, pathloss_matrix, number_of_edges, 
             # one subcarrier can only hold L devices, automatically satisfied
             # power adding rules should be reconsidered
             number_slots_per_PRB = number_of_edges / (number_of_devices * number_of_PRBs)
+
             for i in range(number_of_PRBs):
                 MODEL.addConstr(sum(
-                    X[int(k * (number_of_edges / number_of_devices) + i * number_slots_per_PRB + j)]
+                    X[int(k * (number_of_edges / number_of_devices) + i * number_slots_per_PRB + j)] * power_list[int(k * (number_of_edges / number_of_devices) + i * number_slots_per_PRB + j)]
+                    + sum(X[int(k * (number_of_edges / number_of_devices) + i * number_slots_per_PRB + L * (j // L) + subcarrier)] * power_list[int(k * (number_of_edges / number_of_devices) + i * number_slots_per_PRB + L * (j // L) + subcarrier)]
+                          for subcarrier, device in zip(range(L), range(int(number_of_devices))))
                     for j, k in zip(range(int(number_slots_per_PRB)), range(int(number_of_devices)))) <= power_max)
 
+            #No need to change
             for i in range(number_of_edges):
                 MODEL.addConstr(X[i] * pathloss_list[i] * (power_list[i] - Xi * sum(
                     power_list[j] * X[j] for j in range(0, int(i - number_of_edges / number_of_devices))))

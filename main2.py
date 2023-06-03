@@ -9,7 +9,7 @@ from Baseline_SDA import Baseline_SDA
 from MIPSolution import MIPBranchCutGurobi
 from MWFMP import MWFMP
 bandwidth_per_PRB = 180*1e3 #Hz
-L = 2
+L = 5
 
 subcarrier_bandwidth = 15*1e3 #Hz B
 

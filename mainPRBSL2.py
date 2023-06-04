@@ -19,7 +19,8 @@ number_of_PRB = 5 #S
 target_datarate_per_device = 70*1e3 #kbps
 number_of_subcarriers_perPRB = 12 #L * number of subcarriers per PRB
 number_of_slots_per_PRB = number_of_subcarriers_perPRB * L
-number_of_slots_total = number_of_slots_per_PRB * number_of_PRB
+
+number_of_slots_total = number_of_slots_per_PRB * number_of_PRB 
 
 indoor_loss_dB = 10
 noise_figure_dB = 5
@@ -41,9 +42,8 @@ runs = 1000
 devices_block = 4
 
 for target_datarate_per_device in [10, 30, 50, 70, 90, 110, 130]:
-    contending_devices = number_of_PRB * number_of_slots_per_PRB
     ##generate the new D, which refers to the
-    number_of_device_required = contending_devices
+    number_of_device_required = number_of_PRB * number_of_slots_per_PRB
     np.random.seed(2)
     device_distance = np.random.uniform(0, radius_range, (runs, number_of_device_required))
 
@@ -59,52 +59,47 @@ for target_datarate_per_device in [10, 30, 50, 70, 90, 110, 130]:
 
     Xi = np.power(2, target_datarate_per_device /subcarrier_bandwidth ) - 1
     # creating the fading coefficients
-    number_of_different_total_slots = number_of_device_required * number_of_subcarriers_perPRB * number_of_PRB
-
-    p_matrix = np.zeros((runs, number_of_different_total_slots * L))
-    p_matrix_copy = np.zeros((runs, number_of_different_total_slots * L))
-    p_matrix_MWFMP = np.zeros((runs, number_of_different_total_slots * L))
-    g_matrix = np.zeros((runs, number_of_different_total_slots * L))
+    
+    number_of_edges = number_of_slots_total * number_of_device_required
+    p_matrix = np.zeros((runs, number_of_edges))
+    p_matrix_copy = np.zeros((runs, number_of_edges))
+    p_matrix_MWFMP = np.zeros((runs, number_of_edges))
+    g_matrix = np.zeros((runs, number_of_edges))
 
     for t in range(runs):
         #generate data
         np.random.seed(0)
-        b_list_real = np.random.randn(number_of_different_total_slots)
+        b_list_real = np.random.randn(number_of_edges / L)
         np.random.seed(1)
-        b_list_complex = np.random.randn(number_of_different_total_slots)
-        b_list = np.zeros(number_of_different_total_slots, dtype=complex)
-        b_list_X = np.zeros(number_of_different_total_slots)
-        p_list = np.zeros(number_of_different_total_slots)
+        b_list_complex = np.random.randn(number_of_edges/ L)
+        b_list = np.zeros(number_of_edges, dtype=complex)
+        b_list_X = np.zeros(number_of_edges / L)
+        p_list = np.zeros(number_of_edges / L)
         # b_list_X = np.abs(np.sort_complex(-1 * b_list_X))
-        for i in range(number_of_different_total_slots):
+        for i in range(number_of_edges):
             b_list[i] = b_list_complex[i] + b_list_complex[i] * cmath.sqrt(-1)
-        for i in range(number_of_different_total_slots):
-            b_list_X[i] = (np.power(b_list[i].real, 2) + np.power(b_list[i].imag, 2)) / path_loss_w[t][int(i / (number_of_different_total_slots / number_of_device_required))]
+            b_list_X[i] = (np.power(b_list[i].real, 2) + np.power(b_list[i].imag, 2)) / path_loss_w[t][int(i / (number_of_edges / number_of_device_required))]
 
         #for future usage, still add the multiply of L into the date generation
-        for i in range(number_of_different_total_slots):
             for j in range(L):
                 g_matrix[t][i * L+j] = b_list_X[i]
             g_matrix[t] = np.abs(np.sort(-1 * g_matrix[t]))
-
-        p_mediate = 0
-        for i in range(number_of_different_total_slots): #p_mediate +
             p_list[i] = Xi * (N_noise / g_matrix[t][i // L])
-            p_mediate += p_list[i]
-        for i in range(number_of_different_total_slots):
+
             for j in range(L):
                 p_matrix[t][i*L+j] = p_list[i]
                 p_matrix_copy[t][i*L + j] = p_list[i]
                 p_matrix_MWFMP[t][i*L + j] = p_list[i]
 
     print("generation done")
-    number_of_edges = number_of_device_required * number_of_slots_total
-    connected_device_sequence_SDA[contending_devices], datetime_sequence_SDA[contending_devices] = Baseline_SDA(runs, L, number_of_PRB, transmission_power_per_PRB, p_matrix, number_of_slots_per_PRB, number_of_device_required)
+    plot = 0
+    connected_device_sequence_SDA[plot], datetime_sequence_SDA[plot] = Baseline_SDA(runs, L, number_of_PRB, transmission_power_per_PRB, p_matrix, number_of_slots_per_PRB, number_of_device_required)
     print("SDA done")
-    connected_device_sequence_MWFMP[contending_devices], datetime_sequence_MWFMP[contending_devices] = MWFMP(runs, p_matrix_MWFMP, number_of_device_required, number_of_PRB, transmission_power_per_PRB, number_of_slots_per_PRB, L)
+    connected_device_sequence_MWFMP[plot], datetime_sequence_MWFMP[plot] = MWFMP(runs, p_matrix_MWFMP, number_of_device_required, number_of_PRB, transmission_power_per_PRB, number_of_slots_per_PRB, L)
     print("MWFMP done")
-    connected_device_sequence_MIP[contending_devices], datetime_sequence_MIP[contending_devices] = MIPBranchCutGurobi(10, L,  p_matrix_copy, g_matrix, number_of_edges, number_of_device_required, bandwidth_per_PRB, number_of_PRB, Xi, N_noise)
+    connected_device_sequence_MIP[plot], datetime_sequence_MIP[plot] = MIPBranchCutGurobi(10, L,  p_matrix_copy, g_matrix, number_of_edges, number_of_device_required, bandwidth_per_PRB, number_of_PRB, Xi, N_noise)
     print("MIP done")
+    plot += 1
 print(connected_device_sequence_SDA)
 print(connected_device_sequence_MIP)
 print(connected_device_sequence_MWFMP)

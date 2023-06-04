@@ -14,6 +14,7 @@ def MIPBranchCutGurobi(runs, L, power_matrix, pathloss_matrix, number_of_edges, 
         if flag == 1:
             MODEL = gurobipy.Model()
             X = MODEL.addVars(number_of_edges, vtype=gurobipy.GRB.BINARY)
+
             MODEL.update()
             obj = gurobipy.LinExpr()
             for i in range(number_of_edges):

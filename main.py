@@ -9,14 +9,14 @@ from Baseline_SDA import Baseline_SDA
 from MIPSolution import MIPBranchCutGurobi
 from MWFMP import MWFMP
 bandwidth_per_PRB = 180*1e3 #Hz
-L = 4
+L = 1
 
 subcarrier_bandwidth = 15*1e3 #Hz B
 
 transmission_power_per_PRB = 0.2 #w 23dB
 
 number_of_PRB = 1 #S
-target_datarate_per_device = 20*1e3 #kbps
+target_datarate_per_device = 100*1e3 #kbps
 number_of_subcarriers_perPRB = 12 #L * number of subcarriers per PRB
 number_of_slots_per_PRB = number_of_subcarriers_perPRB * L
 number_of_slots_total = number_of_slots_per_PRB * number_of_PRB

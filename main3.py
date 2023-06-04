@@ -9,14 +9,14 @@ from Baseline_SDA import Baseline_SDA
 from MIPSolution import MIPBranchCutGurobi
 from MWFMP import MWFMP
 bandwidth_per_PRB = 180*1e3 #Hz
-L = 6
+L = 3
 
 subcarrier_bandwidth = 15*1e3 #Hz B
 
 transmission_power_per_PRB = 0.2 #w 23dB
 
 number_of_PRB = 1 #S
-target_datarate_per_device = 20*1e3 #kbps
+target_datarate_per_device = 100*1e3 #kbps
 number_of_subcarriers_perPRB = 12 #L * number of subcarriers per PRB
 number_of_slots_per_PRB = number_of_subcarriers_perPRB * L
 number_of_slots_total = number_of_slots_per_PRB * number_of_PRB
@@ -43,7 +43,9 @@ devices_block = 4
 for contending_devices in range(0, plot_x_number):
     ##generate the new D, which refers to the
     number_of_device_required = (contending_devices+1) * devices_block
+    np.random.seed(2)
     device_distance = np.random.uniform(0, radius_range, (runs, number_of_device_required))
+
     path_loss_w = np.zeros((runs, number_of_device_required))
     for i in range(runs):
         for j in range(number_of_device_required):

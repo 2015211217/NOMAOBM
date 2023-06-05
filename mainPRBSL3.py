@@ -72,15 +72,16 @@ for target_datarate_per_device in [10, 30, 50, 70, 90, 110, 130]:
     for t in range(runs):
         # generate data
         np.random.seed(0)
-        b_list_real = np.random.randn(number_of_edges / L)
+        b_list_real = np.random.randn(int(number_of_edges / L))
         np.random.seed(1)
-        b_list_complex = np.random.randn(number_of_edges / L)
-        b_list = np.zeros(number_of_edges, dtype=complex)
-        b_list_X = np.zeros(number_of_edges / L)
-        p_list = np.zeros(number_of_edges / L)
+        b_list_complex = np.random.randn(int(number_of_edges / L))
+        b_list = np.zeros(int(number_of_edges/L), dtype=complex)
+        b_list_X = np.zeros(int(number_of_edges / L))
+        p_list = np.zeros(int(number_of_edges / L))
         # b_list_X = np.abs(np.sort_complex(-1 * b_list_X))
-        for i in range(number_of_edges):
+        for i in range(int(number_of_edges / L)):
             b_list[i] = b_list_complex[i] + b_list_complex[i] * cmath.sqrt(-1)
+
             b_list_X[i] = (np.power(b_list[i].real, 2) + np.power(b_list[i].imag, 2)) / path_loss_w[t][
                 int(i / (number_of_edges / number_of_device_required))]
 

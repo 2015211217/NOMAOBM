@@ -24,7 +24,7 @@ number_of_slots_total = number_of_slots_per_PRB * number_of_PRB * L
 indoor_loss_dB = 10
 noise_figure_dB = 5
 
-radius_range = 500
+radius_range = 2000
 UE_gain_dB = -4
 noise_spectral_density_dBmHZ = -174
 
@@ -106,8 +106,8 @@ for number_of_PRB in range(1, 6):
     print("MWFMP done")
     print(connected_device_sequence_SDA)
     print(connected_device_sequence_MWFMP)
-    # connected_device_sequence_MIP[plot], datetime_sequence_MIP[plot] = MIPBranchCutGurobi(10, L,  p_matrix_copy, g_matrix, number_of_edges, number_of_device_required, bandwidth_per_PRB, number_of_PRB, Xi, N_noise)
-    # print("MIP done")
+    connected_device_sequence_MIP[plot], datetime_sequence_MIP[plot] = MIPBranchCutGurobi(10, L,  p_matrix_copy, g_matrix, number_of_edges, number_of_device_required, bandwidth_per_PRB, number_of_PRB, Xi, N_noise)
+    print("MIP done")
     plot += 1
 
 print(connected_device_sequence_MIP)

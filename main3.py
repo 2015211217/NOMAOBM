@@ -24,7 +24,7 @@ number_of_slots_total = number_of_slots_per_PRB * number_of_PRB
 indoor_loss_dB = 10
 noise_figure_dB = 5
 
-radius_range = 1000
+radius_range = 2000
 UE_gain_dB = -4
 noise_spectral_density_dBmHZ = -174
 

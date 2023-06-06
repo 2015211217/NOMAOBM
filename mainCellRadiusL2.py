@@ -101,8 +101,8 @@ for radius_range in [250, 750, 1250, 1750, 2250, 2750, 3250]:
     print("MWFMP done")
     print(connected_device_sequence_SDA)
     print(connected_device_sequence_MWFMP)
-    # connected_device_sequence_MIP[plot], datetime_sequence_MIP[plot] = MIPBranchCutGurobi(1, L,  p_matrix_copy, g_matrix, number_of_edges, number_of_device_required, bandwidth_per_PRB, number_of_PRB, Xi, N_noise)
-    # print("MIP done")
+    connected_device_sequence_MIP[plot], datetime_sequence_MIP[plot] = MIPBranchCutGurobi(1, L,  p_matrix_copy, g_matrix, number_of_edges, number_of_device_required, bandwidth_per_PRB, number_of_PRB, Xi, N_noise)
+    print("MIP done")
     plot += 1
 
 # print(connected_device_sequence_MIP)

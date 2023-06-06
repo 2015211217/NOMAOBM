@@ -36,7 +36,7 @@ connected_device_sequence_MIP = np.zeros(plot_x_number)
 datetime_sequence_SDA = np.zeros(plot_x_number)
 datetime_sequence_MIP = np.zeros(plot_x_number)
 datetime_sequence_MWFMP = np.zeros(plot_x_number)
-runs = 1000
+runs = 200
 devices_block = 4
 
 for radius_range in [250, 750, 1250, 1750, 2250, 2750, 3250]:
@@ -67,14 +67,14 @@ for radius_range in [250, 750, 1250, 1750, 2250, 2750, 3250]:
     for t in range(runs):
         #generate data
         np.random.seed(0)
-        b_list_real = np.random.randn(int(number_of_edges / L))
+        b_list_real = np.random.randn(int(number_of_edges /(L * number_of_subcarriers_perPRB)))
         np.random.seed(1)
-        b_list_complex = np.random.randn(int(number_of_edges / L))
-        b_list = np.zeros(int(number_of_edges / L), dtype=complex)
-        b_list_X = np.zeros(int(number_of_edges / L))
-        p_list = np.zeros(int(number_of_edges / L))
+        b_list_complex = np.random.randn(int(number_of_edges /(L * number_of_subcarriers_perPRB)))
+        b_list = np.zeros(int(number_of_edges / (L * number_of_subcarriers_perPRB)), dtype=complex)
+        b_list_X = np.zeros(int(number_of_edges / (L * number_of_subcarriers_perPRB)))
+        p_list = np.zeros(int(number_of_edges / (L * number_of_subcarriers_perPRB)))
         # b_list_X = np.abs(np.sort_complex(-1 * b_list_X))
-        for i in range(int(number_of_edges / L)):
+        for i in range(int(number_of_edges /(L * number_of_subcarriers_perPRB))):
             b_list[i] = b_list_complex[i] + b_list_complex[i] * cmath.sqrt(-1)
             b_list_X[i] = (np.power(b_list[i].real, 2) + np.power(b_list[i].imag, 2)) / path_loss_w[t][int(i / (number_of_edges/L/ number_of_device_required))]
 
@@ -84,27 +84,29 @@ for radius_range in [250, 750, 1250, 1750, 2250, 2750, 3250]:
             g_matrix[t] = np.abs(np.sort(-1 * g_matrix[t]))
 
         p_mediate = 0
-        for i in range(int(number_of_edges / L)): #p_mediate +
-            p_list[i] = Xi * (N_noise / g_matrix[t][i // L])
+        for i in range(int(number_of_edges /(L * number_of_subcarriers_perPRB))): #p_mediate +
+            p_list[i] = Xi * (N_noise / g_matrix[t][i // (L * number_of_subcarriers_perPRB)])
             p_mediate += p_list[i]
-        for i in range(int(number_of_edges / L)):
-            for j in range(L):
-                p_matrix[t][i*L+j] = p_list[i]
-                p_matrix_copy[t][i*L + j] = p_list[i]
-                p_matrix_MWFMP[t][i*L + j] = p_list[i]
+        for i in range(int(number_of_edges /(L * number_of_subcarriers_perPRB))):
+            for j in range(L * number_of_subcarriers_perPRB):
+                p_matrix[t][i *L * number_of_subcarriers_perPRB+j] = p_list[i]
+                p_matrix_copy[t][i* L * number_of_subcarriers_perPRB + j] = p_list[i]
+                p_matrix_MWFMP[t][i* L * number_of_subcarriers_perPRB + j] = p_list[i]
 
     print("generation done")
     plot = 0
-    connected_device_sequence_SDA[plot], datetime_sequence_SDA[plot] = Baseline_SDA(runs, L, number_of_PRB, transmission_power_per_PRB, p_matrix, number_of_slots_per_PRB, number_of_device_required)
+    connected_device_sequence_SDA[plot], datetime_sequence_SDA[plot] = Baseline_SDA(runs, L, number_of_PRB, transmission_power_per_PRB, p_matrix, number_of_slots_per_PRB, number_of_device_required, Xi)
     print("SDA done")
-    connected_device_sequence_MWFMP[plot], datetime_sequence_MWFMP[plot] = MWFMP(runs, p_matrix_MWFMP, number_of_device_required, number_of_PRB, transmission_power_per_PRB, number_of_slots_per_PRB, L)
+    connected_device_sequence_MWFMP[plot], datetime_sequence_MWFMP[plot] = MWFMP(runs, p_matrix_MWFMP, number_of_device_required, number_of_PRB, transmission_power_per_PRB, number_of_slots_per_PRB, L, Xi)
     print("MWFMP done")
-    connected_device_sequence_MIP[plot], datetime_sequence_MIP[plot] = MIPBranchCutGurobi(10, L,  p_matrix_copy, g_matrix, number_of_edges, number_of_device_required, bandwidth_per_PRB, number_of_PRB, Xi, N_noise)
-    print("MIP done")
+    print(connected_device_sequence_SDA)
+    print(connected_device_sequence_MWFMP)
+    # connected_device_sequence_MIP[plot], datetime_sequence_MIP[plot] = MIPBranchCutGurobi(1, L,  p_matrix_copy, g_matrix, number_of_edges, number_of_device_required, bandwidth_per_PRB, number_of_PRB, Xi, N_noise)
+    # print("MIP done")
     plot += 1
-print(connected_device_sequence_SDA)
-print(connected_device_sequence_MIP)
-print(connected_device_sequence_MWFMP)
+
+# print(connected_device_sequence_MIP)
+
 
 ##plot the result
 # timearray = np.zeros(plot_x_number)

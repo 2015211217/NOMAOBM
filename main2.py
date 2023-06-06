@@ -24,7 +24,7 @@ number_of_slots_total = number_of_slots_per_PRB * number_of_PRB
 indoor_loss_dB = 10
 noise_figure_dB = 5
 
-radius_range = 500
+radius_range = 1000
 UE_gain_dB = -4
 noise_spectral_density_dBmHZ = -174
 
@@ -92,13 +92,13 @@ for contending_devices in range(0, plot_x_number):
         for i in range(int(number_of_edges / (L * number_of_subcarriers_perPRB))):
             for j in range(L * number_of_subcarriers_perPRB):
                 p_matrix[t][i * L * number_of_subcarriers_perPRB+j] = p_list[i]
-                p_matrix_copy[t][i*L + j] = p_list[i]
-                p_matrix_MWFMP[t][i*L + j] = p_list[i]
+                p_matrix_copy[t][i*L* number_of_subcarriers_perPRB + j] = p_list[i]
+                p_matrix_MWFMP[t][i*L* number_of_subcarriers_perPRB + j] = p_list[i]
 
     print("generation done")
-    connected_device_sequence_SDA[contending_devices], datetime_sequence_SDA[contending_devices] = Baseline_SDA(runs, L, number_of_PRB, transmission_power_per_PRB, p_matrix, number_of_slots_per_PRB, number_of_device_required)
+    connected_device_sequence_SDA[contending_devices], datetime_sequence_SDA[contending_devices] = Baseline_SDA(runs, L, number_of_PRB, transmission_power_per_PRB, p_matrix, number_of_slots_per_PRB, number_of_device_required, Xi)
     print("SDA done")
-    connected_device_sequence_MWFMP[contending_devices], datetime_sequence_MWFMP[contending_devices] = MWFMP(runs, p_matrix_MWFMP, number_of_device_required, number_of_PRB, transmission_power_per_PRB, number_of_slots_per_PRB, L)
+    connected_device_sequence_MWFMP[contending_devices], datetime_sequence_MWFMP[contending_devices] = MWFMP(runs, p_matrix_MWFMP, number_of_device_required, number_of_PRB, transmission_power_per_PRB, number_of_slots_per_PRB, L, Xi)
     print("MWFMP done")
     connected_device_sequence_MIP[contending_devices], datetime_sequence_MIP[contending_devices] = MIPBranchCutGurobi(10, L,  p_matrix_copy, g_matrix, number_of_edges, number_of_device_required, bandwidth_per_PRB, number_of_PRB, Xi, N_noise)
     print("MIP done")

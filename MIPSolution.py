@@ -35,7 +35,7 @@ def MIPBranchCutGurobi(runs, L, power_matrix, pathloss_matrix, number_of_edges, 
             for i in range(number_of_PRBs):
                 MODEL.addConstr(sum(
                     X[int(k * (number_of_edges / number_of_devices) + i * number_slots_per_PRB + j)] * power_list[int(k * (number_of_edges / number_of_devices) + i * number_slots_per_PRB + j)]
-                    + sum(X[int(k * (number_of_edges / number_of_devices) + i * number_slots_per_PRB + L * (j // L) + subcarrier)] * power_list[int(k * (number_of_edges / number_of_devices) + i * number_slots_per_PRB + L * (j // L) + subcarrier)]
+                    + sum(Xi * X[int(k * (number_of_edges / number_of_devices) + i * number_slots_per_PRB + L * (j // L) + subcarrier)] * power_list[int(k * (number_of_edges / number_of_devices) + i * number_slots_per_PRB + L * (j // L) + subcarrier)]
                           for subcarrier, device in zip(range(L), range(int(number_of_devices))))
                     for j, k in zip(range(int(number_slots_per_PRB)), range(int(number_of_devices)))) <= power_max)
 

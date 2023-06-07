@@ -39,7 +39,7 @@ datetime_sequence_MIP = np.zeros(plot_x_number)
 datetime_sequence_MWFMP = np.zeros(plot_x_number)
 runs = 1000
 devices_block = 4
-
+plot = 0
 for number_of_PRB in range(1, 6):
 
     ##generate the new D, which refers to the
@@ -99,7 +99,7 @@ for number_of_PRB in range(1, 6):
                 p_matrix_MWFMP[t][i*L* number_of_subcarriers_perPRB + j] = p_list[i]
 
     print("generation done")
-    plot = 0
+
     connected_device_sequence_SDA[plot], datetime_sequence_SDA[plot] = Baseline_SDA(runs, L, number_of_PRB, transmission_power_per_PRB, p_matrix, number_of_slots_per_PRB, number_of_device_required, Xi)
     print("SDA done")
     connected_device_sequence_MWFMP[plot], datetime_sequence_MWFMP[plot] = MWFMP(runs, p_matrix_MWFMP, number_of_device_required, number_of_PRB, transmission_power_per_PRB, number_of_slots_per_PRB, L, Xi)

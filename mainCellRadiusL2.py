@@ -38,7 +38,7 @@ datetime_sequence_MIP = np.zeros(plot_x_number)
 datetime_sequence_MWFMP = np.zeros(plot_x_number)
 runs = 200
 devices_block = 4
-
+plot = 0
 for radius_range in [250, 750, 1250, 1750, 2250, 2750, 3250]:
     ##generate the new D, which refers to the
     number_of_device_required = number_of_PRB * number_of_slots_per_PRB
@@ -94,7 +94,7 @@ for radius_range in [250, 750, 1250, 1750, 2250, 2750, 3250]:
                 p_matrix_MWFMP[t][i* L * number_of_subcarriers_perPRB + j] = p_list[i]
 
     print("generation done")
-    plot = 0
+
     connected_device_sequence_SDA[plot], datetime_sequence_SDA[plot] = Baseline_SDA(runs, L, number_of_PRB, transmission_power_per_PRB, p_matrix, number_of_slots_per_PRB, number_of_device_required, Xi)
     print("SDA done")
     connected_device_sequence_MWFMP[plot], datetime_sequence_MWFMP[plot] = MWFMP(runs, p_matrix_MWFMP, number_of_device_required, number_of_PRB, transmission_power_per_PRB, number_of_slots_per_PRB, L, Xi)
@@ -103,9 +103,9 @@ for radius_range in [250, 750, 1250, 1750, 2250, 2750, 3250]:
     print(connected_device_sequence_MWFMP)
     connected_device_sequence_MIP[plot], datetime_sequence_MIP[plot] = MIPBranchCutGurobi(1, L,  p_matrix_copy, g_matrix, number_of_edges, number_of_device_required, bandwidth_per_PRB, number_of_PRB, Xi, N_noise)
     print("MIP done")
-    plot += 1
-
+    plot = plot + 1
 # print(connected_device_sequence_MIP)
+
 
 
 ##plot the result

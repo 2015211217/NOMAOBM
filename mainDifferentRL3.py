@@ -27,7 +27,7 @@ noise_figure_dB = 5
 radius_range = 2000
 UE_gain_dB = -4
 noise_spectral_density_dBmHZ = -174
-
+plot = 0
 N_noise = np.power(10, noise_spectral_density_dBmHZ/10)/1000 * subcarrier_bandwidth * np.power(10, np.power(10, noise_figure_dB / 10) / 10)
 # number_of_device_required = min(number_of_device_total, int(2 * number_of_PRB * number_of_slots))
 plot_x_number = 5
@@ -96,7 +96,7 @@ for number_of_PRB in range(1, 6):
                 p_matrix_MWFMP[t][i*L * number_of_subcarriers_perPRB + j] = p_list[i]
 
     print("generation done")
-    plot = 0
+
     connected_device_sequence_SDA[plot], datetime_sequence_SDA[plot] = Baseline_SDA(runs, L, number_of_PRB, transmission_power_per_PRB, p_matrix, number_of_slots_per_PRB, number_of_device_required, Xi)
     print("SDA done")
     connected_device_sequence_MWFMP[plot], datetime_sequence_MWFMP[plot] = MWFMP(runs, p_matrix_MWFMP, number_of_device_required, number_of_PRB, transmission_power_per_PRB, number_of_slots_per_PRB, L, Xi)

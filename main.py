@@ -97,9 +97,9 @@ for contending_devices in range(0, plot_x_number):
     connected_device_sequence_SDA[contending_devices], datetime_sequence_SDA[contending_devices] = Baseline_SDA(runs, L, number_of_PRB, transmission_power_per_PRB, p_matrix, number_of_slots_per_PRB, number_of_device_required, Xi)
     print("SDA done")
     connected_device_sequence_Alg1[contending_devices], datetime_sequence_Alg1[contending_devices] = harvey_algo1()
-    print("MWFMP done")
+    print("Alg1 done")
     connected_device_sequence_Alg2[contending_devices], datetime_sequence_Alg2[contending_devices] = harvey_algo2()
-    print("MIP done")
+    print("Alg2 done")
 
 print(connected_device_sequence_SDA, datetime_sequence_SDA)
 print(connected_device_sequence_Alg1, datetime_sequence_Alg1)

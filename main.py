@@ -1,13 +1,12 @@
 ######
 #The journal paper: for each subcarrier, there is only one slot. (experiment)
-#The conference paper: for each subcarrier, there are several slots.
 #####
 import cmath
 import numpy as np
 import matplotlib.pyplot as plt
 from Baseline_SDA import Baseline_SDA
-from MIPSolution import MIPBranchCutGurobi
-from MWFMP import MWFMP
+from HarveyAlgorithm1 import harvey_algo1
+from HarveyAlgorithm2 import harvey_algo2
 bandwidth_pr_PRB = 180*1e3 #Hz
 L = 1
 
@@ -32,11 +31,11 @@ N_noise = np.power(10, noise_spectral_density_dBmHZ/10)/1000 * subcarrier_bandwi
 # number_of_device_required = min(number_of_device_total, int(2 * number_of_PRB * number_of_slots))
 plot_x_number = 10
 connected_device_sequence_SDA = np.zeros(plot_x_number)
-connected_device_sequence_MWFMP = np.zeros(plot_x_number)
-connected_device_sequence_MIP = np.zeros(plot_x_number)
+connected_device_sequence_Alg1 = np.zeros(plot_x_number)
+connected_device_sequence_Alg2 = np.zeros(plot_x_number)
 datetime_sequence_SDA = np.zeros(plot_x_number)
-datetime_sequence_MIP = np.zeros(plot_x_number)
-datetime_sequence_MWFMP = np.zeros(plot_x_number)
+datetime_sequence_Alg1 = np.zeros(plot_x_number)
+datetime_sequence_Alg2 = np.zeros(plot_x_number)
 runs = 1000
 devices_block = 4
 
@@ -83,7 +82,7 @@ for contending_devices in range(0, plot_x_number):
         for i in range(int(number_of_edges / (L * number_of_subcarriers_perPRB))):
             for j in range(L):
                 g_matrix[t][i * L+j] = b_list_X[i]
-            g_matrix[t] = np.abs(np.sort(-1 * g_matrix[t]))
+            # g_matrix[t] = np.abs(np.sort(-1 * g_matrix[t]))
 
         for i in range(int(number_of_edges / (L * number_of_subcarriers_perPRB))): #p_mediate +
             p_list[i] = Xi * (N_noise / g_matrix[t][i // L])
@@ -97,13 +96,14 @@ for contending_devices in range(0, plot_x_number):
     print("generation done")
     connected_device_sequence_SDA[contending_devices], datetime_sequence_SDA[contending_devices] = Baseline_SDA(runs, L, number_of_PRB, transmission_power_per_PRB, p_matrix, number_of_slots_per_PRB, number_of_device_required, Xi)
     print("SDA done")
-    connected_device_sequence_MWFMP[contending_devices], datetime_sequence_MWFMP[contending_devices] = MWFMP(runs, p_matrix_MWFMP, number_of_device_required, number_of_PRB, transmission_power_per_PRB, number_of_slots_per_PRB, L, Xi)
+    connected_device_sequence_Alg1[contending_devices], datetime_sequence_Alg1[contending_devices] = harvey_algo1()
     print("MWFMP done")
-    connected_device_sequence_MIP[contending_devices], datetime_sequence_MIP[contending_devices] = MIPBranchCutGurobi(10, L,  p_matrix_copy, g_matrix, number_of_edges, number_of_device_required, bandwidth_per_PRB, number_of_PRB, Xi, N_noise)
+    connected_device_sequence_Alg2[contending_devices], datetime_sequence_Alg2[contending_devices] = harvey_algo2()
     print("MIP done")
-print(connected_device_sequence_SDA)
-print(connected_device_sequence_MIP)
-print(connected_device_sequence_MWFMP)
+
+print(connected_device_sequence_SDA, datetime_sequence_SDA)
+print(connected_device_sequence_Alg1, datetime_sequence_Alg1)
+print(connected_device_sequence_Alg2, datetime_sequence_Alg2)
 
 ##plot the result
 # timearray = np.zeros(plot_x_number)

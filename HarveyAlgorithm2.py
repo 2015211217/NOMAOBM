@@ -10,7 +10,6 @@ def find_cost_reduced_path(M):
 def harvey_algo2(runs, power_matrix, number_of_subcarriers, number_of_device, number_of_edges_per_device, L, max_PRB, number_of_PRB, number_slots_per_PRB):
     datetime_runs = 0
     connected_devices = 0
-    #The version of code for the journal paper only works for each subcarrier only have one slot
     for t in range(runs):
         start_time = datetime.datetime.now().timestamp()
         p_list = power_matrix[t]
@@ -22,7 +21,7 @@ def harvey_algo2(runs, power_matrix, number_of_subcarriers, number_of_device, nu
                 M = np.append(M, (d, v))
         ## init
         P, M = find_cost_reduced_path(M)
-        
+
 
         connected_devices += connecting_count(M, max_PRB, L, p_list, number_of_device, number_of_PRB,
                                                   number_slots_per_PRB, number_of_edges_per_device)

@@ -36,7 +36,7 @@ connected_device_sequence_Alg2 = np.zeros(plot_x_number)
 datetime_sequence_SDA = np.zeros(plot_x_number)
 datetime_sequence_Alg1 = np.zeros(plot_x_number)
 datetime_sequence_Alg2 = np.zeros(plot_x_number)
-runs = 1000
+runs = 1
 devices_block = 4
 
 for contending_devices in range(0, plot_x_number):
@@ -94,16 +94,18 @@ for contending_devices in range(0, plot_x_number):
                 p_matrix_MWFMP[t][i*L* number_of_subcarriers_perPRB + j] = p_list[i]
 
     print("generation done")
+    # connected_device_sequence_Alg1[contending_devices], datetime_sequence_Alg1[contending_devices] = harvey_algo1(runs, p_matrix, number_of_subcarriers_perPRB * number_of_PRB, number_of_device_required, int(number_of_edges / number_of_device_required), L, transmission_power_per_PRB, number_of_PRB)
+    # print("Alg1 done")
+
+    connected_device_sequence_Alg2[contending_devices], datetime_sequence_Alg2[contending_devices] = harvey_algo2(runs, p_matrix, number_of_subcarriers_perPRB * number_of_PRB, number_of_device_required, int(number_of_edges / number_of_device_required), L, transmission_power_per_PRB, number_of_PRB)
+    print("Alg2 done")
+
     connected_device_sequence_SDA[contending_devices], datetime_sequence_SDA[contending_devices] = Baseline_SDA(runs, L, number_of_PRB, transmission_power_per_PRB, p_matrix, number_of_slots_per_PRB, number_of_device_required, Xi)
     print("SDA done")
-    connected_device_sequence_Alg1[contending_devices], datetime_sequence_Alg1[contending_devices] = harvey_algo1()
-    print("Alg1 done")
-    connected_device_sequence_Alg2[contending_devices], datetime_sequence_Alg2[contending_devices] = harvey_algo2()
-    print("Alg2 done")
+
 
 print(connected_device_sequence_SDA, datetime_sequence_SDA)
 print(connected_device_sequence_Alg1, datetime_sequence_Alg1)
-print(connected_device_sequence_Alg2, datetime_sequence_Alg2)
 
 ##plot the result
 # timearray = np.zeros(plot_x_number)

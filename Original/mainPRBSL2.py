@@ -41,6 +41,7 @@ datetime_sequence_MWFMP = np.zeros(plot_x_number)
 runs = 1000
 devices_block = 4
 plot = 0
+
 for target_datarate_per_device in [10, 30, 50, 70, 90, 110, 130]:
     ##generate the new D, which refers to the
     number_of_device_required = number_of_PRB * number_of_slots_per_PRB

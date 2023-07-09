@@ -1,5 +1,5 @@
 ######
-#The journal paper: for each subcarrier, there is only one slot. (experiment)
+# The journal paper: for each subcarrier, there is only one slot. (experiment)
 #####
 import cmath
 import numpy as np
@@ -8,16 +8,18 @@ from Baseline_SDA import Baseline_SDA
 from MWFMP import MWFMP
 from HarveyAlgorithm1 import harvey_algo1
 from HarveyAlgorithm2 import harvey_algo2
-bandwidth_pr_PRB = 180*1e3 #Hz
+
+bandwidth_pr_PRB = 180 * 1e3  # Hz
 L = 5
 
-subcarrier_bandwidth = 15*1e3 #Hz B
+subcarrier_bandwidth = 15 * 1e3  # Hz B
 
-transmission_power_per_PRB = 0.2 #w 23dB
+transmission_power_per_PRB = 0.2  # w 23dB
 
-target_datarate_per_device = 20 * 1e3 #kbps
-number_of_subcarriers_perPRB = 12 #L * number of subcarriers per PRB
+number_of_PRB = 3  # S
+number_of_subcarriers_perPRB = 12  # L * number of subcarriers per PRB
 number_of_slots_per_PRB = number_of_subcarriers_perPRB * L
+number_of_slots_total = number_of_slots_per_PRB * number_of_PRB
 
 indoor_loss_dB = 10
 noise_figure_dB = 5
@@ -26,8 +28,10 @@ radius_range = 2000
 UE_gain_dB = -4
 noise_spectral_density_dBmHZ = -174
 
-N_noise = np.power(10, noise_spectral_density_dBmHZ/10)/1000 * subcarrier_bandwidth * np.power(10, np.power(10, noise_figure_dB / 10) / 10)
-plot_x_number = 5
+N_noise = np.power(10, noise_spectral_density_dBmHZ / 10) / 1000 * subcarrier_bandwidth * np.power(10, np.power(10,
+                                                                                                                noise_figure_dB / 10) / 10)
+# number_of_device_required = min(number_of_device_total, int(2 * number_of_PRB * number_of_slots))
+plot_x_number = 7
 connected_device_sequence_SDA = np.zeros(plot_x_number)
 connected_device_sequence_Alg1 = np.zeros(plot_x_number)
 connected_device_sequence_Alg2 = np.zeros(plot_x_number)
@@ -39,12 +43,11 @@ datetime_sequence_Alg2 = np.zeros(plot_x_number)
 datetime_sequence_MWFMP = np.zeros(plot_x_number)
 runs = 1000
 devices_block = 4
+
 contending_devices = 0
 
-for number_of_PRB in range(1, 6):
+for target_datarate_per_device in [10, 30, 50, 70, 90, 110, 130]:
     ##generate the new D, which refers to the
-    number_of_slots_total = number_of_slots_per_PRB * number_of_PRB
-
     number_of_device_required = number_of_PRB * number_of_slots_per_PRB
 
     np.random.seed(2)
@@ -53,13 +56,15 @@ for number_of_PRB in range(1, 6):
     path_loss_w = np.zeros((runs, number_of_device_required))
     for i in range(runs):
         for j in range(number_of_device_required):
-            path_loss_w[i][j] = np.power(10, (120.9 + 37.6 * np.log10(device_distance[i][j] / 1000) + UE_gain_dB + indoor_loss_dB) / 10)
+            path_loss_w[i][j] = np.power(10, (
+                        120.9 + 37.6 * np.log10(device_distance[i][j] / 1000) + UE_gain_dB + indoor_loss_dB) / 10)
 
     # path_loss_dB = 120.9 + 37.6 * np.log(number_of_device_required / 1000) + UE_gain_dB + indoor_loss_dB
     if number_of_subcarriers_perPRB <= 0 or number_of_device_required <= 0 or number_of_PRB <= 0:
         print("EXIT: INVALID INPUT!")
         exit(0)
-    Xi = np.power(2, target_datarate_per_device /subcarrier_bandwidth ) - 1
+
+    Xi = np.power(2, target_datarate_per_device / subcarrier_bandwidth) - 1
     # creating the fading coefficients
     number_of_edges = number_of_device_required * number_of_slots_total
     p_matrix = np.zeros((runs, number_of_edges))
@@ -68,7 +73,7 @@ for number_of_PRB in range(1, 6):
     g_matrix = np.zeros((runs, number_of_edges))
 
     for t in range(runs):
-        #generate data
+        # generate data
         np.random.seed(0)
         b_list_real = np.random.randn(int(number_of_edges / (L * number_of_subcarriers_perPRB)))
         np.random.seed(1)
@@ -80,22 +85,23 @@ for number_of_PRB in range(1, 6):
         for i in range(int(number_of_edges / (L * number_of_subcarriers_perPRB))):
             b_list[i] = b_list_complex[i] + b_list_complex[i] * cmath.sqrt(-1)
         for i in range(int(number_of_edges / (L * number_of_subcarriers_perPRB))):
-            b_list_X[i] = (np.power(b_list[i].real, 2) + np.power(b_list[i].imag, 2)) / path_loss_w[t][int(i / (int(number_of_edges / L) / number_of_device_required))]
+            b_list_X[i] = (np.power(b_list[i].real, 2) + np.power(b_list[i].imag, 2)) / path_loss_w[t][
+                int(i / (int(number_of_edges / L) / number_of_device_required))]
 
-        #for future usage, still add the multiply of L into the date generation
+        # for future usage, still add the multiply of L into the date generation
         for i in range(int(number_of_edges / (L * number_of_subcarriers_perPRB))):
             for j in range(L):
-                g_matrix[t][i * L+j] = b_list_X[i]
+                g_matrix[t][i * L + j] = b_list_X[i]
             # g_matrix[t] = np.abs(np.sort(-1 * g_matrix[t]))
 
-        for i in range(int(number_of_edges / (L * number_of_subcarriers_perPRB))): #p_mediate +
+        for i in range(int(number_of_edges / (L * number_of_subcarriers_perPRB))):  # p_mediate +
             p_list[i] = Xi * (N_noise / g_matrix[t][i // L])
 
         for i in range(int(number_of_edges / (L * number_of_subcarriers_perPRB))):
             for j in range(L * number_of_subcarriers_perPRB):
-                p_matrix[t][i * L * number_of_subcarriers_perPRB+j] = p_list[i]
-                p_matrix_copy[t][i*L* number_of_subcarriers_perPRB + j] = p_list[i]
-                p_matrix_MWFMP[t][i*L* number_of_subcarriers_perPRB + j] = p_list[i]
+                p_matrix[t][i * L * number_of_subcarriers_perPRB + j] = p_list[i]
+                p_matrix_copy[t][i * L * number_of_subcarriers_perPRB + j] = p_list[i]
+                p_matrix_MWFMP[t][i * L * number_of_subcarriers_perPRB + j] = p_list[i]
 
     print("generation done")
 
@@ -104,12 +110,26 @@ for number_of_PRB in range(1, 6):
     # connected_device_sequence_Alg2[contending_devices], datetime_sequence_Alg2[contending_devices] = harvey_algo2(runs, p_matrix, number_of_subcarriers_perPRB * number_of_PRB, number_of_device_required, int(number_of_edges / number_of_device_required), L, transmission_power_per_PRB, number_of_PRB)
     # print("Alg2 done")
 
-    connected_device_sequence_SDA[contending_devices], datetime_sequence_SDA[contending_devices] = Baseline_SDA(runs, L, number_of_PRB, transmission_power_per_PRB, p_matrix, number_of_slots_per_PRB, number_of_device_required, Xi)
+    connected_device_sequence_SDA[contending_devices], datetime_sequence_SDA[contending_devices] = Baseline_SDA(runs, L,
+                                                                                                                number_of_PRB,
+                                                                                                                transmission_power_per_PRB,
+                                                                                                                p_matrix,
+                                                                                                                number_of_slots_per_PRB,
+                                                                                                                number_of_device_required,
+                                                                                                                Xi)
     print("SDA done")
 
-    connected_device_sequence_MWFMP[contending_devices], datetime_sequence_MWFMP[contending_devices] = MWFMP(runs, p_matrix_MWFMP, number_of_device_required, number_of_PRB, transmission_power_per_PRB, number_of_slots_per_PRB, L, Xi)
+    connected_device_sequence_MWFMP[contending_devices], datetime_sequence_MWFMP[contending_devices] = MWFMP(runs,
+                                                                                                             p_matrix_MWFMP,
+                                                                                                             number_of_device_required,
+                                                                                                             number_of_PRB,
+                                                                                                             transmission_power_per_PRB,
+                                                                                                             number_of_slots_per_PRB,
+                                                                                                             L, Xi)
     print("MWFMP done")
+
     contending_devices += 1
+
 
 print(connected_device_sequence_SDA, datetime_sequence_SDA)
 print(connected_device_sequence_MWFMP, datetime_sequence_MWFMP)

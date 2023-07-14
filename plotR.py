@@ -9,25 +9,32 @@ timearray = np.zeros(plot_x_number)
 for i in range(plot_x_number):
     timearray[i] = i * devices_block + 10
 
-plt.plot(timearray, [4.35168353, 4.42678476, 4.375383, 4.23532837, 3.97733568, 4.12813582, 4.02363161], "b-.d" , label="NOMA-SM1")
-plt.plot(timearray, [4.04991896, 3.8897451,  4.21934991, 4.14625098, 3.95735613, 3.84597541, 3.7800392], "g-.^", label="NOMA-SM2")
-plt.plot(timearray,  [4.39334114, 4.41295296, 4.33287776, 4.42019525, 4.48044347, 4.36003773, 4.36520091], "r-.h", label="MWFMP[6]")
-plt.plot(timearray, [1.10353459, 1.15486737, 1.19511459, 1.26595486, 1.21426297, 1.22738546, 1.22984584], "-.o", label="MPSDA[6]")
+plt.plot(timearray,[180.,177.94,176.865,176.98,176.295,175.505,174.115],"k-.d",label="NOMA-SM1")
+plt.plot(timearray,[180.,177.94,176.865,176.98,176.295,175.505,174.115],"g-.^",label="NOMA-SM2")
+plt.plot(timearray,[180.,178.53,172.396,160.286,143.666,122.104,95.175],"r-.h",label="MWFMP[10]")
+plt.plot(timearray,[163.92,155.58,140.38,122.35,106.325,90.55,79.295],"-.o",label="MPSDA[10]")
 
 # plt.yticks(np.arange(1, 6, step = 4))
-plt.xticks(np.arange(10, 150, step = 20))
-plt.ylim(ymin = 0)
+plt.tick_params(labelsize = 14)
+plt.xticks(np.arange(10, 150, step = 20), fontweight = 'bold')
+plt.tick_params(labelsize = 14)
+plt.yticks(fontweight = 'bold')
+
+plt.ylim(ymin = 75)
 plt.xlim(xmin = 10)
 
 plt.grid(b=None, which='major', axis='both')
 # plt.title("Number of connected devices with different R")
-# plt.xlabel("No. of PRBs")
-plt.xlabel("R (kpbs)")
+# plt.xlabel("No. of PRBs", fontsize = 16, fontweight = 'bold')
+plt.xlabel("R (kpbs)", fontsize = 16, fontweight = 'bold')
 # plt.xlabel("Cell Radius (m)")
-# plt.ylabel("Average No. of Connected Devices")
-plt.ylabel("Average Runtime (s)")
+plt.ylabel("Average No. of Connected Devices", fontsize = 16, fontweight = 'bold')
+# plt.ylabel("Average Runtime (s)", fontsize = 16, fontweight = 'bold')
 #, bbox_to_anchor = (num1, ), loc = , borderaxespad =
-plt.legend(frameon=False)
 
-plt.savefig('RTime', format='pdf')
+plt.rcParams.update({'font.size': 14})
+font = {'style': 'normal', 'weight': 'bold'}
+plt.legend(frameon=False, loc=9, ncol=2, bbox_to_anchor=(0.5, 1.18), prop=font)
+
+plt.savefig('R.pdf', format='pdf')
 plt.show()
